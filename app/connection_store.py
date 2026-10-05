@@ -21,7 +21,7 @@ def get_active_store() -> "ConnectionStore | None":
 
 
 class ConnectionStore:
-    """Store one upserted connection per exact ``(user_id, persona_id)`` pair."""
+    """Store encrypted Sage OAuth tokens per exact ``(user_id, persona_id)`` pair."""
 
     def __init__(self, collection: Any, encryption_key: str):
         self.collection = collection
@@ -67,7 +67,7 @@ class ConnectionStore:
         return {"id": str(document.get("_id", ObjectId())), **values}
 
     async def public_metadata(self, user_id: str, persona_id: str) -> dict[str, Any] | None:
-        """Return safe display fields only, excluding all credentials."""
+        """Return safe OAuth connection metadata, excluding all tokens."""
         document = await self.collection.find_one(
             {"user_id": user_id, "persona_id": persona_id},
             {"values.name": 1, "values.base_url": 1, "created": 1, "modified": 1},
@@ -81,3 +81,10 @@ class ConnectionStore:
             if encrypted_value:
                 safe[key] = self.cipher.decrypt(encrypted_value.encode("ascii")).decode("utf-8")
         return {"id": str(document["_id"]), **safe}
+
+    async def delete(self, user_id: str, persona_id: str) -> bool:
+        """Delete only the authenticated user's active persona connection."""
+        result = await self.collection.delete_one(
+            {"user_id": user_id, "persona_id": persona_id}
+        )
+        return result.deleted_count == 1

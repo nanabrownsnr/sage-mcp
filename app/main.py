@@ -20,9 +20,14 @@ from app.auth import get_auth_provider
 from app.config import settings
 from app.connection_store import ConnectionStore, set_active_store
 from app.license import license_watcher
-from app.tools.say_hello import register_tool as register_say_hello
+from app.tools.sage_create import register_tool as register_sage_create
+from app.tools.sage_delete import register_tool as register_sage_delete
+from app.tools.sage_describe import register_tool as register_sage_describe
+from app.tools.sage_get import register_tool as register_sage_get
+from app.tools.sage_list import register_tool as register_sage_list
+from app.tools.sage_resources import register_tool as register_sage_resources
+from app.tools.sage_update import register_tool as register_sage_update
 from app.twynity import register_routes
-from app.ui.say_hello.resource import register_resource
 from app.usage import save_usage_report
 
 logger = getLogger(__name__)
@@ -33,7 +38,7 @@ async def app_lifespan(server):
     task = None
     try:
         store = ConnectionStore(
-            mongo[settings.DATABASE_NAME]["project_connections"], settings.ENCRYPTION_KEY
+            mongo[settings.DATABASE_NAME]["sage_oauth_connections"], settings.ENCRYPTION_KEY
         )
         await store.setup()
         set_active_store(store)
@@ -54,7 +59,13 @@ mcp = FastMCP(
 )
 
 
-register_say_hello(mcp)
+register_sage_resources(mcp)
+register_sage_describe(mcp)
+register_sage_list(mcp)
+register_sage_get(mcp)
+register_sage_create(mcp)
+register_sage_update(mcp)
+register_sage_delete(mcp)
 
 class UsageTrackingMiddleware(MCPMiddleware):
     async def on_call_tool(self, context: MiddlewareContext, call_next):
@@ -71,7 +82,6 @@ class UsageTrackingMiddleware(MCPMiddleware):
         return await call_next(context)
 mcp.add_middleware(UsageTrackingMiddleware())
 
-register_resource(mcp)
 register_routes(mcp)
 
 

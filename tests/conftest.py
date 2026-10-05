@@ -19,6 +19,14 @@ os.environ.setdefault(
     "ENCRYPTION_KEY", "MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA="
 )
 os.environ.setdefault("PUBLIC_URL", "http://localhost:8000")
+os.environ.setdefault("SAGE_CLIENT_ID", "test-sage-client")
+os.environ.setdefault("SAGE_CLIENT_SECRET", "test-sage-secret")
+os.environ.setdefault("SAGE_SUBSCRIPTION_KEY", "test-sage-subscription-key")
+os.environ.setdefault("SAGE_OAUTH_TOKEN_URL", "http://sage.invalid/token")
+os.environ.setdefault("SAGE_OAUTH_AUTHORIZE_URL", "http://sage.invalid/authorize")
+os.environ.setdefault("SAGE_OAUTH_SCOPES", "full_access")
+os.environ.setdefault("SAGE_API_BASE_URL", "http://sage.invalid/v3.1")
+os.environ.setdefault("SAGE_OAUTH_REDIRECT_URIS", "http://twynity.invalid/callback")
 os.environ.setdefault("LICENSE_KEY", "test-license")
 os.environ.setdefault("LICENSE_SERVER_BASE_URL", "http://license.invalid")
 os.environ.setdefault("LICENSE_SERVER_JWKS_ENDPOINT", "/.well-known/jwks.json")
@@ -27,5 +35,5 @@ os.environ.setdefault("LICENSE_SERVER_ACTIVATION_ENDPOINT", "/activate")
 
 @pytest.fixture
 def greeting_name():
-    """Reusable example input for the starter tool."""
+    """Legacy UI fixture retained while the starter UI is being replaced."""
     return "Ada"

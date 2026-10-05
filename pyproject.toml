@@ -1,9 +1,9 @@
 # Python project, dependency, test, and lint configuration. Rename the project
 # and manage dependencies with `uv add`; do not edit the generated uv.lock.
 [project]
-name = "twynity-mcp-starter-template"
+name = "sage-mcp"
 version = "0.1.0"
-description = "A production-shaped FastMCP and MCP Apps starter template"
+description = "Twynity MCP integration for Sage Business Cloud Accounting"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [

@@ -14,12 +14,12 @@ load_dotenv()
 
 # Put your MCP name here. Keeping this value in one place makes the service
 # identity, display title, and log filenames easy to customise.
-mcp_name = ""
+mcp_name = "sage"
 
 
 def configured_mcp_name() -> str:
     """Return a runnable default until the template owner chooses a name."""
-    return mcp_name.strip() or "starter"
+    return mcp_name.strip() or "sage"
 
 
 def configure_logging():
@@ -51,8 +51,8 @@ def configure_logging():
     root_logger.addHandler(detailed_handler)
 
 class Settings(BaseSettings):
-    SERVICE_ID: str = f"{configured_mcp_name()}_mcp"
-    APP_TITLE: str = f"{configured_mcp_name().title()} MCP"
+    SERVICE_ID: str = "sage-mcp"
+    APP_TITLE: str = "Sage Accounting MCP"
     APP_VERSION: str = "1.0.0"
     ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development")  # development | staging | production
     API_V1_STR: str = "/api/v1"
@@ -65,6 +65,19 @@ class Settings(BaseSettings):
     MONGODB_URI: str
     DATABASE_NAME: str = "twynity_mcp"
     ENCRYPTION_KEY: str
+
+    # Sage Accounting OAuth configuration. Select the token URL for the region
+    # in which the Sage developer application was registered.
+    SAGE_OAUTH_AUTHORIZE_URL: str = "https://www.sageone.com/oauth2/auth/central"
+    SAGE_OAUTH_TOKEN_URL: str
+    SAGE_CLIENT_ID: str
+    SAGE_CLIENT_SECRET: str
+    # API subscription key issued when the Sage Accounting API is added to
+    # the developer application. Sent on API calls, never to the browser.
+    SAGE_SUBSCRIPTION_KEY: str
+    SAGE_OAUTH_SCOPES: str = "full_access"
+    SAGE_OAUTH_REDIRECT_URIS: str = ""
+    SAGE_API_BASE_URL: str = "https://api.accounting.sage.com/v3.1"
 
     # Usage reporting
     USAGE_REPORT_ENDPOINT: str

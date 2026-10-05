@@ -22,7 +22,7 @@ def test_auth_provider_uses_the_configured_jwks_endpoint():
 
     assert provider.jwks_uri == "http://account.invalid/.well-known/jwks.json"
     assert provider.algorithm == "RS256"
-    assert provider.audience == "starter_mcp"
+    assert provider.audience == "sage-mcp"
 
 
 @pytest.mark.asyncio

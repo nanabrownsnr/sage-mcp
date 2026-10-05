@@ -1,46 +1,24 @@
-# Instructions for agents working from this template
+# Coding-agent instructions for Sage MCP
 
-This is a reusable Twynity MCP starter. Replace the sample greeting feature
-with the target integration while preserving the shared auth, connection,
-secrets, and test contracts.
-
-## Identity and credentials
-
-- Verify bearer JWTs with the configured account-service JWKS. Custom HTTP
-  routes must call the explicit verifier in `app/auth.py`; FastMCP's verifier
-  alone does not protect custom routes.
-- Resolve user identity from verified token claims (`id`, falling back to
-  `sub`) and active project/persona from the configured `Persona-Id` request
-  header. Never accept a persona ID only as an untrusted tool argument/body.
-- Every MongoDB read/write must use the exact `(user_id, persona_id)` pair.
-  Never fall back to user-only lookup. The compound unique index and upsert
-  pattern are deliberate.
-- Encrypt connector secrets before storage. Never return/log secrets or place
-  them in tool content, structured UI data, or configuration GET responses.
-- Keep persona identity separate from connection display name and upstream URL.
-- MCP App `app.callServerTool()` cannot attach arbitrary headers. Document and
-  test that the Twynity host forwards `Persona-Id` (and bearer auth) for App
-  calls; do not ask the UI to collect the persona ID.
-
-## Extending the starter
-
-- Put one logical tool module per file under `app/tools/`, register it in
-  `app/main.py`, and describe when/how an LLM should call it.
-- For credentials in a tool, use `await app.tools.connection.get_current_connection()`
-  so the call resolves the trusted user/persona context.
-- For UI-enabled tools, add a matching `app/ui/<view>/` resource and keep the
-  `structured_content` contract in sync with backend tests and frontend code.
-- Adapt `/api/v1/schema` and configuration validation for the upstream service
-  while retaining encrypted storage and safe metadata-only GET responses.
-- Add tests for successes, invalid inputs, missing/invalid auth, missing
-  persona, cross-persona isolation, encryption, and upstream failures.
-- Preserve Twynity manifest, health, license, usage-reporting, and CORS behavior
-  unless the target deployment contract explicitly differs.
-
-## Before committing
-
-- Update `README.md`, this guide, and `.env.example` for the integration.
-- Run `uv run pytest -q` and `uv run ruff check app tests`.
-- Build each UI and Docker image; verify deployment-specific settings.
-- Check `git diff --check` and ensure `.env`, logs, generated bundles, and
-  credentials are not committed.
+- Work only in this Sage repository; the reusable template is a separate
+  repository and should not receive Sage-specific edits.
+- Preserve Twynity JWT verification plus the required `Persona-Id` header.
+  Scope credential reads/writes to the exact `(user_id, persona_id)` pair.
+- This service uses the Twynity OAuth category, not API-key or project/schema
+  configuration. Keep the manifest, login, token-callback, logout, and `/me`
+  contracts aligned with `docs/TEMPLATE_GUIDE.md`.
+- Never return or log Sage access/refresh tokens or client secrets. Store token
+  fields Fernet-encrypted and return only safe connection status.
+- Use the checked-in Sage OpenAPI document as the source of truth for resource
+  paths, fields, query parameters, and CRUD support. Keep generic tools
+  parameterized by Sage resource type; do not add hand-maintained per-resource
+  field lists.
+- Put each MCP tool in its own module. Give each tool a detailed LLM docstring
+  covering when to call it, resource ambiguity, arguments, and safety rules.
+- Financial writes must not guess amounts or linked IDs. Delete is destructive
+  and requires explicit confirmation. Keep non-CRUD workflows unexposed until
+  their semantics are reviewed.
+- Test successful operations, invalid inputs, auth/identity failures, cross-
+  persona isolation, encryption, Sage API errors, and OAuth refresh behavior.
+- Before commit, run `uv run pytest -q`, `uv run ruff check app tests`, build
+  the MCP App, and run `git diff --check`.
